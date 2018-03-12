@@ -1,0 +1,30 @@
+{
+  "name": "koa-socket-talkroom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "export NODE_ENV=development && supervisor --harmony app",
+    "build": "supervisor --harmony app",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/airliuchuan/koa-socket-talkroom.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/airliuchuan/koa-socket-talkroom/issues"
+  },
+  "homepage": "https://github.com/airliuchuan/koa-socket-talkroom#readme",
+  "devDependencies": {
+    "koa": "^2.5.0",
+    "koa-mysql-session": "^0.0.2",
+    "koa-session-minimal": "^3.0.4",
+    "koa-static": "^4.0.2",
+    "mysql": "^2.15.0",
+    "socket.io": "^2.0.4"
+  }
+}

@@ -1,0 +1,158 @@
+.signup-wrap {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+}
+.login-wrap {
+  display: none;
+}
+.signup-con {
+  width: 500px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.signup-con {
+  text-align: center;
+}
+.signup-con .panel-body>div {
+  width: 100%;
+}
+.signup-input, .login-input {
+  padding: 60px 100px 30px;
+}
+.login-input  {
+  display: none;
+}
+.signup-input>div, .login-input>div {
+  margin-bottom: 20px;
+}
+#go-login, #go-signup {
+  display: inline-block;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.tip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  height: 70px;
+  line-height: 70px;
+  background: #000;
+  text-align: center;
+  font-size: 15px;
+  color: #fff;
+}
+/* 对话框部分 */
+.dialog, .dialog>.row{
+  height: 100%;
+  overflow: hidden;
+  
+}
+.dialog>.row>div {
+  height: 100%;
+  border: 1px solid #ddd;
+  padding: 0
+}
+
+.dialog-window>.panel{
+  height: 100%;
+  background: #f2f2f2;
+}
+.dialog-window .panel-heading {
+  height: 40px;
+  line-height: 40px;
+  border-bottom: 1px solid #ddd;
+}
+.dialog-window .panel-body {
+  position: absolute;
+  top: 41px;
+  left: 0;
+  right: 0;
+  bottom: 150px;
+  padding: 0 10px;
+}
+.dialog-window .panel-footer {
+  position: absolute;
+  bottom: 0;
+  height: 150px;
+  width: 100%;
+}
+.dialog-window .list-group-item {
+  background: #f2f2f2;
+  border: 0;
+}
+.dialog-name {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  line-height: 50px;
+  background: #ccc;
+}
+.dialog-con {
+  width: 70%;
+  min-height: 50px;
+  margin: 0 10px;
+  background: #fff;
+  border-radius: 5px;
+  overflow: hidden;
+  white-space: wrap; 
+  padding: 10px;
+}
+.dialog-window .panel-footer {
+  padding: 0;
+}
+.talk-tools {
+  width: 100%;
+  height: 30px;
+  border-bottom: 1px solid #ddd;
+}
+.talk-area {
+  width: 100%;
+  position: absolute;
+  top: 30px;
+  bottom: 0;
+}
+.talk-area textarea {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: #f2f2f2;
+}
+.user-list .panel-body, .user-list .list-group, .user-list .panel {
+  border: 0;
+}
+.user-list .panel-body, .user-list .list-group-item {
+  padding: 0;
+}
+.online-name {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.online-name img {
+  width: 100%;
+  height: 100%;
+}
+.online-msg {
+  position: absolute;
+  top: 0;
+  left: 60px;
+  right: 0;
+  bottom: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 10px;
+}
+.online-msg span {
+  color: #999;
+}
+

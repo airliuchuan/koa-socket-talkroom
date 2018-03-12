@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/index.css">
+  <script src="/js/jquery-2.1.3.min.js"></script>
+  <script src="/js/index.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <title>chat</title>
+</head>
+<body>
+  <div class="signup-wrap">
+    <div class="signup-con panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">socket.io chat</h3>
+      </div>
+      <div class="panel-body signup-input">
+        <div class="input-group">
+          <input type="text" class="form-control" id="sign-user" placeholder="请输入用户名">
+        </div>
+        <div class="input-group">
+          <input type="password" class="form-control" id="sign-pwd" placeholder="请输入密码">
+        </div>
+        <div class="input-group">
+          <input type="password" class="form-control" id="re-pwd" placeholder="请确认密码">
+        </div>
+        <button class="btn btn-primary center-block" id="signup-btn">注册</button>
+        <span id="go-login">去登录</span>
+      </div>
+      <div class="panel-body login-input">
+        <div class="input-group">
+          <input type="text" class="form-control" id="lg-user" placeholder="请输入用户名">
+        </div>
+        <div class="input-group">
+          <input type="password" class="form-control" id="lg-pwd" placeholder="请输入密码">
+        </div>
+        <button class="btn btn-primary center-block" id="login-btn">登录</button>
+        <span id="go-signup">去注册</span>
+      </div>
+    </div>
+  </div>
+  <div class="dialog container">
+    <div class="row">
+      <div class="col-md-3 col-md-offset-1 user-list">
+        <div class="panel panel-success">
+          <div class="panel-heading">
+            <div class="panel-title">在线列表</div>
+          </div>
+          <div class="panel-body">
+            <ul class="list-group" id="online-wrap">
+              <!-- <li class="list-group-item clearfix">
+                <div class="online-name pull-left">
+                  <img src="/img/github.jpg" alt="">
+                </div>
+                <div class="online-msg pull-left">
+                  <h3 id="user-name">在线的人</h3>
+                  <span id="last">这是一段最近一条消息, 还挺长</span>
+                </div>
+              </li> -->
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-7 dialog-window">
+        <div class="panel">
+          <div class="panel-heading">
+            <h3 class="panel-title">某人</h3>
+          </div>
+          <div class="panel-body">
+            <ul class="list-group" id="dialog-wrap">
+              <!-- <li class="list-group-item clearfix">
+                <div class="dialog-name pull-left">
+                  <span>某人</span>
+                </div>
+                <div class="dialog-con pull-left">
+                  <span>某人说给我的一句话某人说给我的一句话某人说给我的一句话某人说给我的一句话某人说给我的一句话</span>
+                </div>
+              </li> -->
+              <!-- <li class="list-group-item clearfix">
+                  <div class="dialog-name pull-right">
+                    <span>我</span>
+                  </div>
+                  <div class="dialog-con pull-right">
+                    <span>某人说给我的一句话某人说给我的一句话某人说给我的一句话某人说给我的一句话某人说给我的一句话</span>
+                  </div>
+                </li> -->
+            </ul>
+          </div>
+          <div class="panel-footer">
+            <div class="talk-tools"></div>
+            <div class="talk-area">
+              <textarea id="txt"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  // 封装方法
+  // 创建div
+  var createTip = function(){
+      var div = document.createElement("div");
+      div.innerHTML = "我是弹窗内容";
+      div.style.display = 'none';
+      div.classList.add('tip')
+      document.body.appendChild(div);
+      return div;
+  };
+
+  // 获取实例的封装代码
+  var getInstance = function(fn) {
+      var result;
+      return function(){
+          return result || (result = fn.call(this,arguments));
+      }
+  };
+  // 测试创建div
+  var createTip = getInstance(createTip);
+  function tipHandle(con) {
+    var tip = createTip()
+    tip.innerText = con
+    tip.style.display = 'block'
+    
+    setTimeout(function() {tip.style.display = 'none'}, 2000)
+  }
+
+  function toLogin() {
+    $('.signup-input').fadeOut(0)
+    $('.login-input').fadeIn(500)
+  }
+  function toSignup() {
+    $('.signup-input').fadeIn(500)
+    $('.login-input').fadeOut(0)
+  }
+  function toDialog() {
+    $('.dialog').fadeIn(300)
+    $('.signup-wrap').fadeOut(0)
+  
+  }
+
+  function receiveMsg(name, msg) {
+    var receiveMsg = $(`
+      <li class="list-group-item clearfix">
+        <div class="dialog-name pull-left">
+          <span>${name}</span>
+        </div>
+        <div class="dialog-con pull-left">
+          <span>${msg}</span>
+        </div>
+      </li>
+    `)
+    $('#dialog-wrap').append(receiveMsg)
+  }
+  function sendMsg(name, msg) {
+    var receiveMsg = $(`
+      <li class="list-group-item clearfix">
+        <div class="dialog-name pull-right">
+          <span>${name}</span>
+        </div>
+        <div class="dialog-con pull-right">
+          <span>${msg}</span>
+        </div>
+      </li>
+    `)
+    $('#dialog-wrap').append(receiveMsg)
+  }
+  function onLineHandle(name, msg) {
+    msg = msg || ''
+    var onlineList = `
+      <li class="list-group-item clearfix">
+        <div class="online-name pull-left">
+          <img src="/img/github.jpg" alt="">
+        </div>
+        <div class="online-msg pull-left">
+          <h3 id="user-name">${name}</h3>
+          <span id="last">${msg}</span>
+        </div>
+      </li>
+    `
+    $('#online-wrap').append(onlineList)
+    
+  }
+  $('#go-login').click(function() {
+    console.log('tologin')
+    toLogin()
+  })
+  $('#go-signup').click(function() {
+    toSignup()
+  })
+
+  // 服务器通信
+  var socket = io()
+
+  // 注册
+  socket.on('signup_re', function(data) {
+    console.log(data)
+    tipHandle(data.msg)
+    if(!data.code) {
+      toLogin()
+    }
+  })
+
+  $('#signup-btn').click(function() {
+    var user = $('#sign-user').val().trim()
+    var pass = $('#sign-pwd').val().trim()
+    var rePass = $('#re-pwd').val().trim()
+    var data = {
+      user: user,
+      pass: pass,
+      rePass: rePass
+    }
+    if(!user || !pass || !rePass) {
+      tipHandle('内容不能为空')
+    } else if(!/^([A-Za-z]|[\u4E00-\u9FA5])+$/.test(user)) {
+      tipHandle('用户名只能是字母和汉子')
+    } else if(!/(?!^\d+$)(?!^[a-zA-Z]+$)[0-9a-zA-Z]{5,12}/.test(pass)) {
+      tipHandle('密码为6-12位的数字和字母')
+    } else if (pass !== rePass) {
+      tipHandle('两次输入的密码不一致')
+    } else {
+      console.log('emit')
+      socket.emit('signup', data)
+    }
+  })
+  // 更新在线列表
+  socket.on('online', function(arr){
+    console.log(arr)
+    onLineListHandle(arr)
+  })
+  //登录
+  var self, socketId
+  socket.on('login_re', function(data) {
+    tipHandle(data.msg)
+    if(!data.code) {
+      self = data.user.user
+      console.log(data.onlineList)
+      onLineHandle(self, '欢迎')
+      toDialog()
+    }
+  })
+  $('#login-btn').click(function() {
+    var user = $('#lg-user').val().trim()
+    var pass = $('#lg-pwd').val().trim()
+    var data = {
+      user: user,
+      pass: pass
+    }
+    if(!user || !pass) {
+      tipHandle('用户名和密码不能为空')
+    } else {
+      socket.emit('login', data)
+    } 
+
+  })
+  // 发消息
+  socket.on('msgAll', function(data) {
+    console.log(data)
+    var selfMsg = $('#txt').val().trim()
+    receiveMsg(data.user, data.msg)
+    $('#last').text(data.msg)
+    $('#txt').val('')
+  })
+  socket.on('msg_re', function(data) {
+
+  })
+  window.onkeydown = function(e) {
+   
+    if(e.keyCode === 13) {
+      var msg = $('#txt').val().trim()
+      socket.emit('msgAll', msg)
+      sendMsg(self, msg)
+      $('#last').text(msg)
+    }
+   }
+  socket.on('userLeft', function(data) {
+    tipHandle(`${data.username}已下线`)
+  })
+</script>
+</html>
